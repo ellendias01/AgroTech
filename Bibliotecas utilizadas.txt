@@ -1,0 +1,17 @@
+# Bibliotecas para navegação
+npx expo install @react-navigation/native @react-navigation/stack
+
+# Dependências adicionais para navegação
+npx expo install react-native-screens react-native-safe-area-context react-native-gesture-handler
+
+# Styled-components para estilização
+npx expo install styled-components
+
+# Ícones
+npx expo install @expo/vector-icons
+
+# Axios para requisições HTTP
+npx expo install axios
+
+# AsyncStorage para armazenamento local
+npx expo install @react-native-async-storage/async-storage
