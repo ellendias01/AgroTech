@@ -15,8 +15,7 @@ export default class CadastrarUsuario extends Component {
   state = {
     nome: "",
     telefone: "",
-    cpf: "",
-    curso: "",
+    fazenda: "",
     email: "",
     password: "",
     focusedField: "", // Adicionando um campo para identificar qual campo está focado
@@ -24,13 +23,13 @@ export default class CadastrarUsuario extends Component {
 
   // Função para salvar os dados no AsyncStorage
   handleCadastro = async () => {
-    const { nome, telefone, cpf, curso, email, password } = this.state;
-    if (!nome || !telefone || !cpf || !curso || !email || !password) {
+    const { nome, telefone,  fazenda, email, password } = this.state;
+    if ([nome, telefone, fazenda, email, password].some(field => !field.trim())) {
       Alert.alert("Erro", "Preencha todos os campos!");
       return;
     }
   
-    const newUser = { nome, telefone, cpf, curso, email, password };
+    const newUser = { nome, telefone, fazenda, email, password };
   
     try {
       // Recupera a lista de usuários salvos
@@ -71,19 +70,16 @@ export default class CadastrarUsuario extends Component {
     }
   };
 
-  // Carregar os dados assim que a tela for montada
-  componentDidMount() {
-    this.carregarDados();
-  }
   async componentDidMount() {
+    this.carregarDados();
+  
     try {
       const userId = await AsyncStorage.getItem("userId"); 
-      console.log("Usuário logado:", userId); // Verifique se está retornando um valor correto
+      console.log("Usuário logado:", userId);
   
       if (userId) {
         this.setState({ userId });
   
-        // Carregar os favoritos do usuário específico
         const favoriteMovies = await AsyncStorage.getItem(`favoriteMovies_${userId}`);
         console.log("Filmes favoritos carregados:", favoriteMovies);
   
@@ -94,7 +90,7 @@ export default class CadastrarUsuario extends Component {
     } catch (error) {
       console.log("Erro ao carregar usuário:", error);
     }
-  }
+  }  
   
   // Função para atualizar o estado de qual campo está sendo focado
   handleFocus = (field) => {
@@ -111,7 +107,7 @@ export default class CadastrarUsuario extends Component {
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-        <Text style={styles.title}>Cadastro de Usuário</Text>
+        <Text style={styles.title}>Cadastro</Text>
 
         <Text style={styles.label}>Nome</Text>
         <View
@@ -119,7 +115,7 @@ export default class CadastrarUsuario extends Component {
             styles.inputContainer,
             {
               borderColor:
-                focusedField === "nome" || this.state.nome !== "" ? "#7159c1" : "#ccc",
+                focusedField === "nome" || this.state.nome !== "" ? "#60B665" : "#ccc",
             },
           ]}
         >
@@ -139,7 +135,7 @@ export default class CadastrarUsuario extends Component {
             styles.inputContainer,
             {
               borderColor:
-                focusedField === "telefone" || this.state.telefone !== "" ? "#7159c1" : "#ccc",
+                focusedField === "telefone" || this.state.telefone !== "" ? "#60B665" : "#ccc",
             },
           ]}
         >
@@ -153,45 +149,25 @@ export default class CadastrarUsuario extends Component {
             onChangeText={(telefone) => this.setState({ telefone })}
           />
         </View>
+        
 
-        <Text style={styles.label}>CPF</Text>
+        <Text style={styles.label}>Fazenda</Text>
         <View
           style={[
             styles.inputContainer,
             {
               borderColor:
-                focusedField === "cpf" || this.state.cpf !== "" ? "#7159c1" : "#ccc",
+                focusedField === "fazenda" || this.state.fazenda !== "" ? "#60B665" : "#ccc",
             },
           ]}
         >
           <TextInput
             style={styles.input}
-            placeholder="Digite seu CPF"
-            keyboardType="numeric"
-            value={this.state.cpf}
-            onFocus={() => this.handleFocus("cpf")}
+            placeholder="Digite sua fazenda"
+            value={this.state.fazenda}
+            onFocus={() => this.handleFocus("fazenda")}
             onBlur={this.handleBlur}
-            onChangeText={(cpf) => this.setState({ cpf })}
-          />
-        </View>
-
-        <Text style={styles.label}>Curso</Text>
-        <View
-          style={[
-            styles.inputContainer,
-            {
-              borderColor:
-                focusedField === "curso" || this.state.curso !== "" ? "#7159c1" : "#ccc",
-            },
-          ]}
-        >
-          <TextInput
-            style={styles.input}
-            placeholder="Digite seu curso"
-            value={this.state.curso}
-            onFocus={() => this.handleFocus("curso")}
-            onBlur={this.handleBlur}
-            onChangeText={(curso) => this.setState({ curso })}
+            onChangeText={(fazenda) => this.setState({ fazenda })}
           />
         </View>
 
@@ -201,7 +177,7 @@ export default class CadastrarUsuario extends Component {
             styles.inputContainer,
             {
               borderColor:
-                focusedField === "email" || this.state.email !== "" ? "#7159c1" : "#ccc",
+                focusedField === "email" || this.state.email !== "" ? "#60B665" : "#ccc",
             },
           ]}
         >
@@ -223,7 +199,7 @@ export default class CadastrarUsuario extends Component {
             styles.inputContainer,
             {
               borderColor:
-                focusedField === "password" || this.state.password !== "" ? "#7159c1" : "#ccc",
+                focusedField === "password" || this.state.password !== "" ? "#60B665" : "#ccc",
             },
           ]}
         >
@@ -256,10 +232,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 35,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#7159c1",
+    color: "#60B665",
   },
   label: {
     alignSelf: "flex-start",
@@ -286,7 +262,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   button: {
-    backgroundColor: "#7159c1",
+    backgroundColor: "#60B665",
     borderRadius: 10,
     padding: 12,
     width: "80%",

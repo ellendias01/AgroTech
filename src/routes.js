@@ -20,7 +20,7 @@ export default function Routes() {
           headerLeft: null,
           headerTitleAlign: "center",
           headerStyle: {
-            backgroundColor: "#191970",
+            backgroundColor: "#60B665",
           },
           headerTitleStyle: {
             color: "#fff",
@@ -35,7 +35,7 @@ export default function Routes() {
           title: "CADASTRO DE USUÁRIOS",
           headerTitleAlign: "center",
           headerStyle: {
-            backgroundColor: "#191970",
+            backgroundColor: "#60B665",
           },
           headerTitleStyle: {
             color: "#fff",
@@ -47,11 +47,12 @@ export default function Routes() {
         name="Main"
         component={Main}
         options={({ navigation }) => ({
+          headerShown: false,
           headerLeft: null,
           title: "Filmes",
           headerTitleAlign: "center",
           headerStyle: {
-            backgroundColor: "#191970",
+            backgroundColor: "#60B665",
           },
           headerTintColor: "#fff",
           headerTitleStyle: {
