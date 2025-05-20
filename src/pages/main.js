@@ -8,6 +8,8 @@ import {
   Dimensions,
   StyleSheet,
   SafeAreaView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { LineChart } from "react-native-chart-kit";
@@ -48,51 +50,52 @@ export default function HomeScreen({ navigation }) {
     },
   };
 
-  
-
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Icon name="menu" size={28} color="#fff" style={styles.icon} />
-        <View style={styles.titleWrapper}>
-          <Text style={styles.headerText}>Home</Text>
+    <>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="#000"
+      />
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Icon name="menu" size={28} color="#fff" style={styles.icon} />
+          <View style={styles.titleWrapper}>
+            <Text style={styles.headerText}>Home</Text>
+          </View>
+          <Image
+            source={{ uri: "https://i.imgur.com/0y0y0y0.png" }}
+            style={styles.avatar}
+          />
         </View>
-        <Image
-          source={{ uri: "https://i.imgur.com/0y0y0y0.png" }}
-          style={styles.avatar}
-        />
-      </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.row}>
-          <InfoCard label="Temperatura" value={`☀️ ${temperature}`} />
-          <InfoCard label="Umidade" value={`💧 ${humidity}`} />
-        </View>
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.row}>
+            <InfoCard label="Temperatura" value={`☀️ ${temperature}`} />
+            <InfoCard label="Umidade" value={`💧 ${humidity}`} />
+          </View>
 
-        <AlertCard alerts={alerts} />
+          <AlertCard alerts={alerts} />
 
-        <Text style={styles.graphTitle}>Sensor pasto 1</Text>
-        <LineChart
-          data={chartData}
-          width={screenWidth * 0.9}
-          height={220}
-          chartConfig={chartConfig}
-          style={styles.chart}
-        />
+          <Text style={styles.graphTitle}>Sensor pasto 1</Text>
+          <LineChart
+            data={chartData}
+            width={screenWidth * 0.9}
+            height={220}
+            chartConfig={chartConfig}
+            style={styles.chart}
+          />
 
-        <SummaryBox min="13,3" max="35,3" variation="15,3" />
+          <SummaryBox min="13,3" max="35,3" variation="15,3" />
 
-  
-
-        <TouchableOpacity
-      style={styles.button}
-      onPress={() => navigation.navigate('Relatorios')}
-
-    >
-      <Text style={styles.buttonText}>RELATÓRIOS</Text>
-    </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("Relatorios")}
+          >
+            <Text style={styles.buttonText}>RELATÓRIOS</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -100,6 +103,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E5F1EB",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   header: {
     backgroundColor: "#60B665",
