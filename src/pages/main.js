@@ -17,7 +17,7 @@ import SummaryBox from "../components/SummaryBox";
 
 const screenWidth = Dimensions.get("window").width;
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [temperature] = useState("22ºC");
   const [humidity] = useState("80%");
   const [alerts] = useState([
@@ -47,6 +47,8 @@ export default function HomeScreen() {
       stroke: "#fff",
     },
   };
+
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -80,9 +82,15 @@ export default function HomeScreen() {
 
         <SummaryBox min="13,3" max="35,3" variation="15,3" />
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>RELATÓRIOS</Text>
-        </TouchableOpacity>
+  
+
+        <TouchableOpacity
+      style={styles.button}
+      onPress={() => navigation.navigate('Relatorios')}
+
+    >
+      <Text style={styles.buttonText}>RELATÓRIOS</Text>
+    </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );

@@ -3,7 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Main from "./pages/main";
 import Login from "./pages/login";
 import CadastrarUsuario from "./pages/cadastro";
-import MovieDetails from "./pages/moviedetails";
+import relatorios from "./pages/relatorios";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -76,22 +76,12 @@ export default function Routes() {
           ),
         })}
       />
-      <Stack.Screen
-  name="MovieDetails"
-  component={MovieDetails}
-  options={({ route }) => ({
-    title: route.params?.movieTitle || "Detalhes do Filme", // Caso você passe um título via parâmetros
-    headerTitleAlign: "center",
-    headerStyle: {
-      backgroundColor: "#191970",
-    },
-    headerTintColor: "#fff",
-    headerTitleStyle: {
-      fontWeight: "bold",
-    },
-  })}
-/>
 
+      <Stack.Screen
+        name="Relatorios"
+        component={relatorios}
+        options={{ title: "Relatórios" }}
+      />
     </Stack.Navigator>
     
   );
