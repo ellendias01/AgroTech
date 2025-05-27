@@ -20,4 +20,8 @@ router.get('/dados', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 module.exports = router;
+=======
+module.exports = router;
+>>>>>>> 395ae4438d798ab439f0856213cb8e034a737537
