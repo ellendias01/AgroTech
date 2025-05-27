@@ -1,0 +1,67 @@
+export const chartConfigs = {
+    temp: {
+      backgroundColor: '#fff',
+      backgroundGradientFrom: '#fefefe',
+      backgroundGradientTo: '#fefefe',
+      decimalPlaces: 1,
+      color: (opacity = 1) => `rgba(255, 87, 51, ${opacity})`,
+      labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+      propsForDots: {
+        r: '4',
+        strokeWidth: '2',
+        stroke: '#ff5722',
+      },
+      fillShadowGradient: '#ff7043',
+      fillShadowGradientOpacity: 0.3,
+    },
+    humidity: {
+      backgroundColor: '#fff',
+      backgroundGradientFrom: '#fefefe',
+      backgroundGradientTo: '#fefefe',
+      decimalPlaces: 1,
+      color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
+      labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+      propsForDots: {
+        r: '4',
+        strokeWidth: '2',
+        stroke: '#2196f3',
+      },
+      fillShadowGradient: '#64b5f6',
+      fillShadowGradientOpacity: 0.3,
+    },
+    heatIndex: {
+      backgroundColor: '#fff',
+      backgroundGradientFrom: '#fefefe',
+      backgroundGradientTo: '#fefefe',
+      decimalPlaces: 1,
+      color: (opacity = 1) => `rgba(156, 39, 176, ${opacity})`,
+      labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+      propsForDots: {
+        r: '4',
+        strokeWidth: '2',
+        stroke: '#9c27b0',
+      },
+      fillShadowGradient: '#ba68c8',
+      fillShadowGradientOpacity: 0.3,
+    },
+    correlation: {
+      backgroundColor: '#fff',
+      backgroundGradientFrom: '#fefefe',
+      backgroundGradientTo: '#fefefe',
+      decimalPlaces: 1,
+      color: (opacity = 1) => `rgba(76, 175, 80, ${opacity})`,
+      labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+      fillShadowGradient: '#81c784',
+      fillShadowGradientOpacity: 0.3,
+    },temperaturaMediaConfig: {
+      backgroundColor: '#fff',
+      backgroundGradientFrom: '#fff',
+      backgroundGradientTo: '#fff',
+      decimalPlaces: 1,
+      color: (opacity = 1) => `rgba(255, 87, 51, ${opacity})`,
+      labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+      style: { borderRadius: 16 },
+      propsForDots: { r: '4', strokeWidth: '2', stroke: '#FF5733' },
+    }
+  };
+  

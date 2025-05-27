@@ -1,49 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
-const DateTime = require('../models/DateTime');
-const Humidity = require('../models/Humidity');
-const Temperature = require('../models/Temperature');
+const DadosSensor = require('../models/DadosSensor');
 
-router.get('/datetime', async (req, res) => {
+router.get('/dados', async (req, res) => {
   try {
-    const data = await DateTime.find();
-    res.json(data);
+    const dias = parseInt(req.query.dias) || 7;
+
+    const dataLimite = new Date();
+    dataLimite.setDate(dataLimite.getDate() - dias);
+
+    const dados = await DadosSensor.find({
+      datetime: { $gte: dataLimite }
+    }).sort({ datetime: -1 }); // mais recentes primeiro
+
+    res.json(dados);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao buscar datetime' });
+    res.status(500).json({ error: 'Erro ao buscar dados do sensor' });
   }
 });
-
-router.get('/humidity', async (req, res) => {
-  try {
-    const data = await Humidity.find();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao buscar humidity' });
-  }
-});
-
-router.get('/temperature', async (req, res) => {
-  try {
-    const data = await Temperature.find();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao buscar temperature' });
-  }
-});
-
-router.get('/all', async (req, res) => {
-    try {
-      const [datetime, humidity, temperature] = await Promise.all([
-        DateTime.find(),
-        Humidity.find(),
-        Temperature.find()
-      ]);
-      res.json({ datetime, humidity, temperature });
-    } catch (err) {
-      res.status(500).json({ erro: 'Erro ao buscar dados combinados' });
-    }
-  });
-  
 
 module.exports = router;

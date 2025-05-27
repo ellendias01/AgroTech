@@ -93,3 +93,4 @@ export const ReportText = styled.Text`
   font-size: 16px;
   font-weight: bold;
 `;
+
