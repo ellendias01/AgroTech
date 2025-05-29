@@ -9,11 +9,8 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
-<<<<<<< HEAD
   ActivityIndicator,
-=======
   Platform,
->>>>>>> 395ae4438d798ab439f0856213cb8e034a737537
 } from "react-native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -190,7 +187,6 @@ const chartRef = useRef();
 
   return (
     <>
-<<<<<<< HEAD
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
       <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -289,7 +285,6 @@ const chartRef = useRef();
       
       </ScrollView>
     </SafeAreaView>
-=======
       <StatusBar
         barStyle="dark-content" 
         backgroundColor="#FFF" 
@@ -335,7 +330,6 @@ const chartRef = useRef();
           </ScrollView>
         </View>
       </SafeAreaView>
->>>>>>> 395ae4438d798ab439f0856213cb8e034a737537
     </>
   );
 }
