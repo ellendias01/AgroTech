@@ -9,11 +9,8 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
-<<<<<<< HEAD
   ActivityIndicator,
-=======
   Platform,
->>>>>>> 395ae4438d798ab439f0856213cb8e034a737537
 } from "react-native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -22,6 +19,7 @@ import InfoCard from "../components/InfoCard";
 import SmartAlertCard from "../components/Charts/SmartAlertCard";
 import SummaryBox from "../components/SummaryBox";
 import WeatherDashboard from '../components/Charts/WeatherDashboard';
+import AlertCard from "../components/AlertCard";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -31,7 +29,7 @@ export default function HomeScreen({ navigation }) {
 const chartRef = useRef();
 
   useEffect(() => {
-    fetch("http://192.168.100.7:8080/api/dados") // Substitua pela sua URL real
+    fetch("http://192.168.141.237:8080/api/dados?dias=10") // Substitua pela sua URL real
       .then((res) => res.json())
       .then((data) => {
         setSensorData(data);
@@ -190,7 +188,7 @@ const chartRef = useRef();
 
   return (
     <>
-<<<<<<< HEAD
+
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
       <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -276,12 +274,7 @@ const chartRef = useRef();
           ).toFixed(1)}`}
         />
 
-<TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("Relatorios")}
-          >
-            <Text style={styles.buttonText}>RELATÓRIOS</Text>
-          </TouchableOpacity>
+
           
 <View ref={chartRef}>
         <WeatherDashboard sensorData={sensorData} />
@@ -289,53 +282,12 @@ const chartRef = useRef();
       
       </ScrollView>
     </SafeAreaView>
-=======
-      <StatusBar
-        barStyle="dark-content" 
-        backgroundColor="#FFF" 
-      />
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Icon name="menu" size={28} color="#fff" style={styles.icon} />
-            <View style={styles.titleWrapper}>
-              <Text style={styles.headerText}>Home</Text>
-            </View>
-            <Image
-              source={{ uri: "https://i.imgur.com/0y0y0y0.png" }}
-              style={styles.avatar}
-            />
-          </View>
-
-          <ScrollView contentContainerStyle={styles.content}>
-            <View style={styles.row}>
-              <InfoCard label="Temperatura" value={`☀️ ${temperature}`} />
-              <InfoCard label="Umidade" value={`💧 ${humidity}`} />
-            </View>
-
-            <AlertCard alerts={alerts} />
-
-            <Text style={styles.graphTitle}>Sensor pasto 1</Text>
-            <LineChart
-              data={chartData}
-              width={screenWidth * 0.9}
-              height={220}
-              chartConfig={chartConfig}
-              style={styles.chart}
-            />
-
-            <SummaryBox min="13,3" max="35,3" variation="15,3" />
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate("Relatorios")}
-            >
-              <Text style={styles.buttonText}>RELATÓRIOS</Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-      </SafeAreaView>
->>>>>>> 395ae4438d798ab439f0856213cb8e034a737537
+    <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("Relatorios")}
+          >
+            <Text style={styles.buttonText}>RELATÓRIOS</Text>
+          </TouchableOpacity>
     </>
   );
 }
@@ -407,6 +359,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 12,
+    padding: 50,
     marginTop: 10,
   },
   buttonText: {

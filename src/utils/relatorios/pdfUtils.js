@@ -1,42 +1,39 @@
-import React, { useRef } from 'react';
-import { View, Button } from 'react-native';
-import ViewShot from 'react-native-view-shot';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+import { captureRef } from 'react-native-view-shot';
 
-/**
- * Componente de teste opcional
- */
-export const TesteViewShot = () => {
-  const ref = useRef();
 
-  const capturar = async () => {
-    const uri = await ref.current.capture();
-    console.log('Captura feita em:', uri);
-  };
 
-  return (
-    <View style={{ flex: 1 }}>
-      <ViewShot ref={ref} options={{ format: 'jpg', quality: 0.9 }}>
-        <View style={{ height: 200, backgroundColor: 'tomato' }} />
-      </ViewShot>
-
-      <Button title="Capturar" onPress={capturar} />
-    </View>
-  );
-};
-
-/**
- * Função para capturar view como PDF
- */
 export const captureViewAsPDF = async (ref, fileName = 'relatorio') => {
-  const uri = await ref.current.capture();
+  try {
+    console.log('📸 Capturando imagem da view...');
+    const base64 = await captureRef(ref, {
+      format: 'jpg',
+      quality: 1,
+      result: 'base64',  // capturar em base64
+    });
 
-  const options = {
-    html: `<div style="text-align:center;"><img src="${uri}" style="width:100%;" /></div>`,
-    fileName: fileName,
-    directory: 'Documents',
-  };
+    const htmlContent = `
+      <html>
+        <body style="text-align: center; padding: 0; margin: 0;">
+          <img src="data:image/jpeg;base64,${base64}" style="width: 100%; max-width: 100%;" />
+        </body>
+      </html>
+    `;
 
-  const pdf = await RNHTMLtoPDF.convert(options);
-  return pdf.filePath;
+    const { uri: pdfUri } = await Print.printToFileAsync({
+      html: htmlContent,
+      base64: false,
+    });
+
+    console.log('📄 PDF gerado em:', pdfUri);
+
+    await Sharing.shareAsync(pdfUri); // Exibe opção de compartilhar ou salvar
+
+    return pdfUri;
+  } catch (error) {
+    console.error('❌ Erro ao gerar PDF:', error);
+    throw error;
+  }
 };
+
