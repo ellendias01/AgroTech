@@ -9,7 +9,7 @@ export default function SummaryBox() {
   const [variation, setVariation] = useState(null);
 
   const fetchTemperatura = () => {
-    fetch("http://192.168.141.237:8080/api/dados?dias=10")
+    fetch("http://192.168.100.4:8080/api/dados?dias=30")
       .then((res) => res.json())
       .then((data) => {
         if (!Array.isArray(data) || data.length === 0) {

@@ -15,19 +15,23 @@ import LineChartComponent from '../components/Charts/LineChartComponent';
 import { calcularEstatisticas } from '../utils/relatorios/statistics';
 import { gerarPrevisao } from '../utils/relatorios/forecast';
 import { calcularMediasHora, calcularMediasDiarias } from '../utils/relatorios/aggregations';
-
-
+import DateTimePicker from '@react-native-community/datetimepicker';
+import SeletorDeData from '../components/Relatorios/SeletorDeData';
 import { TesteViewShot ,captureViewAsPDF } from '../utils/relatorios/pdfUtils'; // ✅ Corrigido
-
+import LinearTemperatureForecast from '../components/Relatorios/ForecastModal';
 
 function combinarDados(dataArray) {
-  return dataArray.map((item, index) => ({
-    datetime: item.datetime || `Ponto ${index + 1}`,
-    temperature: item.temperature ?? null,
-    humidity: item.humidity ?? null,
+  if (!Array.isArray(dataArray)) return [];
+  
+  return dataArray.slice(0, 1000).map((item, index) => ({ // Limita a 1000 itens
+    datetime: item?.datetime || `Ponto ${index + 1}`,
+    temperature: item?.temperature ?? null,
+    humidity: item?.humidity ?? null,
     heatIndex: null,
   }));
 }
+
+  
 
 const categoryColors = {
   Frio: '#00f',
@@ -40,6 +44,10 @@ const orderedCategories = ['Frio', 'Agradável', 'Quente'];
 const Relatorios = () => {
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [periodo, setPeriodo] = useState({
+    inicio: new Date().toISOString().split('T')[0],
+    fim: new Date().toISOString().split('T')[0]
+  });
 
   const [modalStats, setModalStats] = useState(false);
   const [modalForecast, setModalForecast] = useState(false);
@@ -50,26 +58,38 @@ const Relatorios = () => {
 const [sensorData, setSensorData] = useState([]);
 
   const [classificationRaw, setClassificationRaw] = useState([]);
- 
+  const [dataSelecionada, setDataSelecionada] = useState(new Date().toISOString().split('T')[0]);
   const chartRef = useRef();
 
+const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || new Date(dataSelecionada);
+    const formattedDate = currentDate.toISOString().split('T')[0];
+    setDataSelecionada(formattedDate);
+  };
+ 
   useEffect(() => {
-    const fetchData = async () => {
+     const fetchData = async () => {
       try {
-        const res = await fetch('http://192.168.141.237:8080/api/dados?dias=10');
+        if (!periodo || !periodo.inicio || !periodo.fim) return; // ⬅️ evita erro
+  
+        const { inicio, fim } = periodo;
+        const url = `http://192.168.100.4:8080/api/dados?data_inicio=${inicio}&data_fim=${fim}`;
+        const res = await fetch(url);
         const json = await res.json();
-
+  
+        // Restante da sua lógica de processamento...
         const combinado = combinarDados(json);
         setDados(combinado);
         setSensorData(json); 
+        
         const contagem = { Frio: 0, Agradável: 0, Quente: 0 };
-
+  
         combinado.forEach(item => {
           if (item.temperature < 15) contagem.Frio++;
           else if (item.temperature <= 25) contagem.Agradável++;
           else contagem.Quente++;
         });
-
+  
         const classificacao = Object.entries(contagem).map(([categoria, quantidade]) => ({
           categoria,
           quantidade,
@@ -80,7 +100,7 @@ const [sensorData, setSensorData] = useState([]);
               ? '15-25°C'
               : '≥25°C',
         }));
-
+  
         setClassificationRaw(classificacao);
       } catch (error) {
         console.error('Erro ao buscar ou processar os dados:', error);
@@ -89,9 +109,8 @@ const [sensorData, setSensorData] = useState([]);
       }
     };
     
-    
     fetchData();
-  }, []);
+  }, [periodo]); // Adicione dataSelecionada como dependência
 
   const estatisticas = useMemo(() => calcularEstatisticas(dados), [dados]);
   const forecastMemo = useMemo(() => gerarPrevisao(dados), [dados]);
@@ -168,6 +187,11 @@ const [sensorData, setSensorData] = useState([]);
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Text style={styles.title}>📈 Relatórios Ambientais</Text>
   
+      <SeletorDeData periodo={periodo} onPeriodoSelecionado={setPeriodo} />
+
+
+
+
       <Button title="📊 Ver Estatísticas" onPress={() => setModalStats(true)} />
       <Button title="🔮 Previsão 7 dias" onPress={() => setModalForecast(true)} />
       <Button title="⏱️ Médias por Hora" onPress={() => setModalHourly(true)} />
@@ -180,6 +204,9 @@ const [sensorData, setSensorData] = useState([]);
         <TemperaturaHorarioChart filteredData={dados} />
         <CorrelationScatterChart filteredData={dados} />
         <ScatterCorrelationChart filteredData={dados} />
+
+        <LinearTemperatureForecast temperatureData={dados} />
+
       </ViewShot>
   
       <Button title="📄 Exportar PDF" onPress={handleExportPDF} />

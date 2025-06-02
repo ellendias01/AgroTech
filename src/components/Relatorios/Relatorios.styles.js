@@ -192,5 +192,30 @@ export const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 14
+  },
+  containe: {
+    marginVertical: 20,
+    paddingHorizontal: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  datePicker: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    padding: 10,
+    elevation: 2, // leve sombra no Android
+  },periodoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginVertical: 15
+  },
+  dateButtonContainer: {
+    flex: 1,
+    marginHorizontal: 5
   }
 });

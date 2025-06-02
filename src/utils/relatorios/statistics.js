@@ -11,7 +11,7 @@ export function calcularEstatisticas(filteredData) {
   const humids = filteredData.map(d => d.humidity);
   const heatIndexes = filteredData.map(d => d.heatIndex);
  // Cálculos básicos
-    const calcStats = (values) => {
+  const calcStats = (values) => {
     const min = Math.min(...values);
     const max = Math.max(...values);
     const avg = values.reduce((a, b) => a + b, 0) / values.length;

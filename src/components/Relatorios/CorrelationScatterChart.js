@@ -41,17 +41,17 @@ const CorrelationScatterChart = ({ filteredData }) => {
          
           {/* Rótulos */}
           <SvgText x={padding / 2} y={padding} fontSize="12" textAnchor="middle">
-            {maxY.toFixed(0)}%
-          </SvgText>
-          <SvgText x={padding / 2} y={chartHeight - padding} fontSize="12" textAnchor="middle">
-            {minY.toFixed(0)}%
-          </SvgText>
-          <SvgText x={padding} y={chartHeight - padding + 20} fontSize="12" textAnchor="start">
-            {minX.toFixed(1)}°C
-          </SvgText>
-          <SvgText x={chartWidth - padding} y={chartHeight - padding + 20} fontSize="12" textAnchor="end">
-            {maxX.toFixed(1)}°C
-          </SvgText>
+  {typeof maxY === 'number' ? `${maxY.toFixed(0)}%` : '–'}
+</SvgText>
+<SvgText x={padding / 2} y={chartHeight - padding} fontSize="12" textAnchor="middle">
+  {typeof minY === 'number' ? `${minY.toFixed(0)}%` : '–'}
+</SvgText>
+<SvgText x={padding} y={chartHeight - padding + 20} fontSize="12" textAnchor="start">
+  {typeof minX === 'number' ? `${minX.toFixed(1)}°C` : '–'}
+</SvgText>
+<SvgText x={chartWidth - padding} y={chartHeight - padding + 20} fontSize="12" textAnchor="end">
+  {typeof maxX === 'number' ? `${maxX.toFixed(1)}°C` : '–'}
+</SvgText>
 
 
 

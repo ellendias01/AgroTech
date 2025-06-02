@@ -26,10 +26,10 @@ const screenWidth = Dimensions.get("window").width;
 export default function HomeScreen({ navigation }) {
   const [sensorData, setSensorData] = useState([]);
   const [processedData, setProcessedData] = useState(null);
-const chartRef = useRef();
+  const chartRef = useRef();
 
   useEffect(() => {
-    fetch("http://192.168.141.237:8080/api/dados?dias=10") // Substitua pela sua URL real
+    fetch("http://192.168.100.4:8080/api/dados")
       .then((res) => res.json())
       .then((data) => {
         setSensorData(data);
@@ -121,256 +121,193 @@ const chartRef = useRef();
     processedData.current.humidity
   );
 
-  const chartData = {
-    labels: processedData.current.hourly.map((h, i) => (i % 3 === 0 ? h.time : "")),
-    datasets: [
-      {
-        data: processedData.current.hourly.map((h) => h.temp),
-        color: () => "#FFA500",
-        strokeWidth: 3,
-      },
-    ],
+  const chartConfig = {
+    backgroundColor: '#ffffff',
+    backgroundGradientFrom: '#ffffff',
+    backgroundGradientTo: '#ffffff',
+    decimalPlaces: 0,
+    color: (opacity = 1) => `rgba(100, 100, 100, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(70, 70, 70, ${opacity})`,
+    propsForDots: {
+      r: '4',
+      strokeWidth: '2',
+      stroke: '#ffffff',
+      fill: '#ea4335',
+    },
+    propsForBackgroundLines: {
+      strokeDasharray: '',
+      strokeWidth: 0.5,
+      stroke: 'rgba(200, 200, 200, 0.5)',
+    },
+    fillShadowGradient: '#fce8e6',
+    fillShadowGradientOpacity: 0.4,
   };
 
-
   const renderTrendIndicator = () => {
-      const temps = processedData.current.hourly.map(h => h.temp);
-      const first = temps[0];
-      const last = temps[temps.length - 1];
-      const isRising = last > first;
-      
-      return (
-        <View style={{ 
-          flexDirection: 'row', 
-          alignItems: 'center', 
-          marginLeft: 8 
+    const temps = processedData.current.hourly.map(h => h.temp);
+    const first = temps[0];
+    const last = temps[temps.length - 1];
+    const isRising = last > first;
+
+    return (
+      <View style={{ 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        marginLeft: 8 
+      }}>
+        <Ionicons 
+          name={isRising ? "trending-up" : "trending-down"} 
+          size={20} 
+          color={isRising ? "#34a853" : "#ea4335"} 
+        />
+        <Text style={{ 
+          color: isRising ? "#34a853" : "#ea4335",
+          marginLeft: 4,
+          fontSize: 14
         }}>
-          <Ionicons 
-            name={isRising ? "trending-up" : "trending-down"} 
-            size={20} 
-            color={isRising ? "#34a853" : "#ea4335"} 
-          />
-          <Text style={{ 
-            color: isRising ? "#34a853" : "#ea4335",
-            marginLeft: 4,
-            fontSize: 14
-          }}>
-            {Math.abs(last - first).toFixed(1)}°
-          </Text>
-        </View>
-      );
-    };
-
-
-  const chartConfig = {
-  backgroundColor: '#ffffff',
-  backgroundGradientFrom: '#ffffff',
-  backgroundGradientTo: '#ffffff',
-  decimalPlaces: 0,
-  color: (opacity = 1) => `rgba(100, 100, 100, ${opacity})`,
-  labelColor: (opacity = 1) => `rgba(70, 70, 70, ${opacity})`,
-  propsForDots: {
-    r: '4',
-    strokeWidth: '2',
-    stroke: '#ffffff',
-    fill: '#ea4335',
-  },
-  propsForBackgroundLines: {
-    strokeDasharray: '',
-    strokeWidth: 0.5,
-    stroke: 'rgba(200, 200, 200, 0.5)',
-  },
-  fillShadowGradient: '#fce8e6',
-  fillShadowGradientOpacity: 0.4,
-
-
+          {Math.abs(last - first).toFixed(1)}°
+        </Text>
+      </View>
+    );
   };
 
   return (
     <>
-
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
       <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.location}>{processedData.location}</Text>
+        <ScrollView contentContainerStyle={styles.content}>
+          <Text style={styles.location}>{processedData.location}</Text>
+          <View style={styles.row}>
+            <InfoCard label="Temperatura" value={temperature} type="temperature" />
+            <InfoCard label="Umidade" value={humidity} type="humidity" />
+          </View>
+          <SmartAlertCard sensorData={processedData} />
 
-        <View style={styles.row}>
-        <InfoCard label="Temperatura" value={temperature} type="temperature" />
-      <InfoCard label="Umidade" value={humidity} type="humidity" />
-        </View>
+          <Text style={styles.sectionTitle}>Tendência Horária</Text>
+          <LineChart
+            data={{
+              labels: processedData.current.hourly.map((h, i) => i % 3 === 0 ? h.time : ""),
+              datasets: [
+                {
+                  data: processedData.current.hourly.map((h) => h.temp),
+                  color: (opacity = 1) => `rgba(234, 67, 53, ${opacity})`,
+                  strokeWidth: 3,
+                },
+              ],
+            }}
+            width={screenWidth * 0.9}
+            height={220}
+            chartConfig={chartConfig}
+            bezier
+            withHorizontalLabels={true}
+            withVerticalLabels={true}
+            withInnerLines={true}
+            withOuterLines={false}
+            withDots={true}
+            withShadow={false}
+            style={styles.chart}
+            yAxisSuffix="°C"
+            yAxisInterval={5}
+          />
 
-        <SmartAlertCard sensorData={processedData} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <Text style={styles.chartTitle}>Tendência Horária</Text>
+            {renderTrendIndicator()} 
+          </View>
 
+          <Text style={styles.sectionTitle}>Médias Diárias</Text>
+          <LineChart
+            data={{
+              labels: processedData.daily.map((d) => d.dateStr),
+              datasets: [
+                {
+                  data: processedData.daily.map((d) => d.tempMax),
+                  color: () => "#f44336",
+                  strokeWidth: 3,
+                },
+                {
+                  data: processedData.daily.map((d) => d.tempMin),
+                  color: () => "#2196f3",
+                  strokeWidth: 3,
+                },
+              ],
+            }}
+            width={screenWidth * 0.9}
+            height={220}
+            chartConfig={chartConfig}
+            bezier
+            style={styles.chart}
+          />
 
+          <SummaryBox
+            min={`${Math.round(Math.min(...processedData.daily.map((d) => d.tempMin)))}`}
+            max={`${Math.round(Math.max(...processedData.daily.map((d) => d.tempMax)))}`}
+            variation={`${Math.abs(processedData.current.temp - processedData.daily[0].tempMin).toFixed(1)}`}
+          />
 
-<Text style={styles.sectionTitle}>Tendência Horária</Text>
-<LineChart
-  data={{
-    labels: processedData.current.hourly.map((h, i) =>
-      i % 3 === 0 ? h.time : ""
-    ),
-    datasets: [
-      {
-        data: processedData.current.hourly.map((h) => h.temp),
-        color: (opacity = 1) => `rgba(234, 67, 53, ${opacity})`, // Vermelho Google
-        strokeWidth: 3,
-      },
-    ],
-  }}
-  width={screenWidth * 0.9}
-  height={220}
-  chartConfig={chartConfig}
-  bezier // Linha suavizada
-  withHorizontalLabels={true}
-  withVerticalLabels={true}
-  withInnerLines={true}
-  withOuterLines={false}
-  withDots={true}
-  withShadow={false}
-  style={styles.chart}
-  yAxisSuffix="°C"
-  yAxisInterval={5} // 
-  
-/>
-<View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-  <Text style={styles.chartTitle}>Tendência Horária</Text>
-  {renderTrendIndicator()} 
-</View>
+          <View ref={chartRef}>
+            <WeatherDashboard sensorData={sensorData} />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
 
-<Text style={styles.sectionTitle}>Médias Diárias</Text>
-<LineChart
-  data={{
-    labels: processedData.daily.map((d) => d.dateStr),
-    datasets: [
-      {
-        data: processedData.daily.map((d) => d.tempMax),
-        color: () => "#f44336",
-        strokeWidth: 3,
-      },
-      {
-        data: processedData.daily.map((d) => d.tempMin),
-        color: () => "#2196f3",
-        strokeWidth: 3,
-      },
-    ],
-  }}
-  width={screenWidth * 0.9}
-  height={220}
-  chartConfig={chartConfig}
-  bezier
-  style={styles.chart}
-/>
-
-
-        <SummaryBox
-          min={`${Math.round(
-            Math.min(...processedData.daily.map((d) => d.tempMin))
-          )}`}
-          max={`${Math.round(
-            Math.max(...processedData.daily.map((d) => d.tempMax))
-          )}`}
-          variation={`${Math.abs(
-            processedData.current.temp - processedData.daily[0].tempMin
-          ).toFixed(1)}`}
-        />
-
-
-          
-<View ref={chartRef}>
-        <WeatherDashboard sensorData={sensorData} />
-      </View>
-      
-      </ScrollView>
-    </SafeAreaView>
-    <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("Relatorios")}
-          >
-            <Text style={styles.buttonText}>RELATÓRIOS</Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("Relatorios")}
+      >
+        <Text style={styles.buttonText}>RELATÓRIOS</Text>
+      </TouchableOpacity>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#E5F1EB",
-  },
   container: {
     flex: 1,
     backgroundColor: "#E5F1EB",
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
-  header: {
-    backgroundColor: "#60B665", 
-    paddingVertical: 16,
-    paddingHorizontal: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  icon: {
-    width: 28,
-  },
-  titleWrapper: {
-    flex: 1,
-    alignItems: "center",
-  },
-  headerText: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  },
   content: {
     alignItems: "center",
-    paddingVertical: 20,
-  },
-  location: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 10,
+    paddingBottom: 16,
   },
   row: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: 10,
-    marginBottom: 10,
+    justifyContent: "space-between",
+    width: "90%",
+    marginBottom: 16,
   },
-  graphTitle: {
-    marginTop: 20,
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 16,
+    marginBottom: 8,
   },
   chart: {
     borderRadius: 16,
-    marginVertical: 8,
+    marginBottom: 16,
+  },
+  chartTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  location: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginTop: 16,
+    marginBottom: 8,
   },
   button: {
-    backgroundColor: "#87D6A9",
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 12,
-    padding: 50,
-    marginTop: 10,
+    backgroundColor: "#60B665",
+    padding: 12,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 16,
   },
   buttonText: {
-    color: "#000",
+    color: "white",
+    fontSize: 16,
     fontWeight: "bold",
-    textAlign: "center",
-  },sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginTop: 20,
-    marginBottom: 10,
-    color: "#444",
   },
 });

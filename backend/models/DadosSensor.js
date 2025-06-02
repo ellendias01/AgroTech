@@ -4,7 +4,7 @@ const dadosSensorSchema = new mongoose.Schema({
   datetime: Date,
   humidity: Number,
   temperature: Number
-}, { collection: 'dados_sensor' });
+}, { collection: 'teste_reais' });
 
 
 module.exports = mongoose.model('DadosSensor', dadosSensorSchema);
