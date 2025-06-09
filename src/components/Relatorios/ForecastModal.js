@@ -1,3 +1,4 @@
+// previsão 7 dias
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
@@ -7,13 +8,26 @@ import { Dimensions } from 'react-native';
 const LinearTemperatureForecast = ({ temperatureData = [] }) => {
   const screenWidth = Dimensions.get('window').width;
 
+  // Função segura para formatar temperaturas
+  const formatTemperature = (temp) => {
+    if (temp === null || temp === undefined || isNaN(temp)) {
+      return 'N/A'; // ou return '0.0' se preferir mostrar zero
+    }
+    return parseFloat(temp).toFixed(1);
+  };
+
+
   // Filtrar e preparar dados
   const prepareData = (data) => {
+    if (!Array.isArray(data)) return [];
     const dadosValidos = data.filter(
       (item) =>
+        item &&
         item.datetime &&
         !isNaN(new Date(item.datetime)) &&
-        typeof item.temperature === 'number'
+        typeof item.temperature === 'number'&&
+        !isNaN(item.temperature)
+
     );
 
     return dadosValidos.map((item) => ({
@@ -121,21 +135,6 @@ const LinearTemperatureForecast = ({ temperatureData = [] }) => {
     return parseFloat(predicted.toFixed(1));
   });
 
-  // Dados para o gráfico
-  const datasCompletas = [...dfPeriodo.map((d) => moment(d.datetime)), ...diasFuturos];
-  const temperaturasCompletas = [...temperatures, ...temperaturasPrevistas];
-
-  const chartConfig = {
-    backgroundColor: '#ffffff',
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    decimalPlaces: 1,
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    style: { borderRadius: 16 },
-    propsForDots: { r: '4', strokeWidth: '2' },
-  };
-
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>🔮 Previsão de Temperatura (Próximos 7 dias)</Text>
@@ -145,7 +144,7 @@ const LinearTemperatureForecast = ({ temperatureData = [] }) => {
           Previsão baseada em {dfPeriodo.length} pontos históricos, com ajuste sazonal.
         </Text>
         <Text style={styles.infoText}>
-          Faixa realista: {safeMin.toFixed(1)}°C a {safeMax.toFixed(1)}°C
+        Faixa realista: {formatTemperature(safeMin)}°C a {formatTemperature(safeMax)}°C
         </Text>
       </View>
 
@@ -165,34 +164,6 @@ const LinearTemperatureForecast = ({ temperatureData = [] }) => {
         ))}
       </View>
 
-      {/* Gráfico */}
-      <Text style={styles.chartTitle}>Histórico e Previsão</Text>
-      <LineChart
-        data={{
-          labels: datasCompletas.map((d, i) => 
-            i % Math.ceil(datasCompletas.length / 5) === 0 ? d.format('DD/MM') : ''
-          ),
-          datasets: [
-            {
-              data: temperaturasCompletas,
-              color: (opacity = 1) => `rgba(75, 192, 192, ${opacity})`,
-              strokeWidth: 2,
-            },
-            {
-              data: [...Array(temperatures.length).fill(null), ...temperaturasPrevistas],
-              color: (opacity = 1) => `rgba(153, 102, 255, ${opacity})`,
-              strokeWidth: 2,
-            },
-          ],
-          legend: ['Histórico', 'Previsão'],
-        }}
-        width={screenWidth - 16}
-        height={280}
-        chartConfig={chartConfig}
-        bezier
-        style={styles.chart}
-        fromZero={false}
-      />
     </ScrollView>
   );
 };

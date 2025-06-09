@@ -1,8 +1,7 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   ScrollView,
   Dimensions,
@@ -11,44 +10,101 @@ import {
   StatusBar,
   ActivityIndicator,
   Platform,
+  RefreshControl,
+  Alert
 } from "react-native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Icon from "react-native-vector-icons/MaterialIcons";
 import { LineChart } from "react-native-chart-kit";
-import InfoCard from "../components/InfoCard";
 import SmartAlertCard from "../components/Charts/SmartAlertCard";
 import SummaryBox from "../components/SummaryBox";
 import WeatherDashboard from '../components/Charts/WeatherDashboard';
-import AlertCard from "../components/AlertCard";
+import WeatherInfo from "../components/WeatherInfo";
+import DropDownPicker from 'react-native-dropdown-picker';
+import { ApiRoutes } from '../config/api';
+
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function HomeScreen({ navigation }) {
   const [sensorData, setSensorData] = useState([]);
   const [processedData, setProcessedData] = useState(null);
-  const chartRef = useRef();
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [warehouses, setWarehouses] = useState([]);
+  const chartRef = useRef(null);
 
-  useEffect(() => {
-    fetch("http://192.168.100.4:8080/api/dados")
+  const fetchData = (warehouse) => {
+    setRefreshing(true);
+    fetch(ApiRoutes.base())
       .then((res) => res.json())
       .then((data) => {
-        setSensorData(data);
-        setProcessedData(processData(data));
+        const uniqueWarehouses = [...new Set(data.map(item => item.local_name))];
+        setWarehouses(uniqueWarehouses);
+  
+        if (!warehouse && uniqueWarehouses.length > 0) {
+          warehouse = uniqueWarehouses[0];
+          setSelectedWarehouse(warehouse); // Atualiza o estado também
+        }
+  
+        const filteredData = warehouse === "Todos os Galpões"
+          ? data
+          : data.filter(item => item.local_name === warehouse);
+  
+        if (filteredData.length === 0) {
+          console.warn('Nenhum dado encontrado para o galpão selecionado');
+          return;
+        }
+  
+        const newestDataDate = new Date(filteredData[0].datetime);
+        const now = new Date();
+  
+        if (now - newestDataDate > 2 * 60 * 60 * 1000) {
+          console.warn('Dados podem estar desatualizados');
+        }
+  
+        setSensorData(filteredData);
+        setProcessedData(processData(filteredData));
+        setLastUpdated(new Date());
       })
-      .catch((error) => console.error("Erro ao buscar dados:", error));
-  }, []);
+      .catch((error) => {
+        console.error("Erro ao buscar dados:", error);
+        Alert.alert("Erro", "Não foi possível carregar os dados mais recentes");
+      })
+      .finally(() => setRefreshing(false));
+  };
+  
+
+  useEffect(() => {
+    fetchData(selectedWarehouse);
+  
+    const interval = setInterval(() => {
+      fetchData(selectedWarehouse);
+    }, 5 * 60 * 1000);
+  
+    return () => clearInterval(interval);
+  }, [selectedWarehouse]);
 
   const processData = (rawData) => {
     if (!rawData || rawData.length === 0) return null;
 
+    // Ordenar por data (mais recente primeiro)
     const sortedData = [...rawData].sort(
-      (a, b) => new Date(a.datetime) - new Date(b.datetime)
+      (a, b) => new Date(b.datetime) - new Date(a.datetime)
+    );
+
+    // Filtrar apenas dados das últimas 24 horas
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+    const recentData = sortedData.filter(item => 
+      new Date(item.datetime) >= twentyFourHoursAgo
     );
 
     const hourlyData = [];
     const daysMap = {};
 
-    sortedData.forEach((item) => {
+    recentData.forEach((item) => {
       const date = new Date(item.datetime);
       const hour = date.getHours();
       const dayKey = date.toISOString().split("T")[0];
@@ -86,11 +142,11 @@ export default function HomeScreen({ navigation }) {
     const filteredDaily = Object.values(daysMap).slice(-7);
 
     return {
-      location: sortedData[0].local_name,
+      location: sortedData[0]?.local_name || "Local desconhecido",
       current: {
-        temp: sortedData[sortedData.length - 1].temperature,
-        humidity: sortedData[sortedData.length - 1].humidity,
-        datetime: sortedData[sortedData.length - 1].datetime,
+        temp: sortedData[0]?.temperature || 0,
+        humidity: sortedData[0]?.humidity || 0,
+        datetime: sortedData[0]?.datetime || new Date().toISOString(),
         hourly: filteredHourly,
       },
       daily: filteredDaily,
@@ -103,6 +159,10 @@ export default function HomeScreen({ navigation }) {
     if (temp < 10) alerts.push("Temperatura muito baixa! Risco de hipotermia.");
     if (humidity > 80) alerts.push("Umidade elevada. Possível ambiente abafado.");
     return alerts;
+  };
+
+  const onRefresh = () => {
+    fetchData();
   };
 
   if (!processedData) {
@@ -175,11 +235,47 @@ export default function HomeScreen({ navigation }) {
     <>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
       <SafeAreaView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.content}>
-          <Text style={styles.location}>{processedData.location}</Text>
+        <ScrollView 
+          contentContainerStyle={styles.content}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#60B665']}
+              tintColor={'#60B665'}
+            />
+          }
+        >
+          <View style={styles.header}>
+            <View style={styles.selectorContainer}>
+              <Text style={styles.selectorLabel}>Selecione o Galpão:</Text>
+              <View style={styles.warehouseContainer}>
+  {warehouses.map((warehouse, index) => (
+    <TouchableOpacity
+      key={index}
+      style={[
+        styles.warehouseButton,
+        selectedWarehouse === warehouse && styles.selectedWarehouse,
+      ]}
+      onPress={() => setSelectedWarehouse(warehouse)}
+    >
+      <Text style={styles.warehouseText}>{warehouse}</Text>
+    </TouchableOpacity>
+  ))}
+</View>
+            </View>
+
+            <Text style={styles.location}>{selectedWarehouse || "Carregando..."}</Text>
+            {lastUpdated && (
+              <Text style={styles.updateText}>
+                Atualizado: {lastUpdated.toLocaleTimeString()}
+              </Text>
+            )}
+          </View>
+          
           <View style={styles.row}>
-            <InfoCard label="Temperatura" value={temperature} type="temperature" />
-            <InfoCard label="Umidade" value={humidity} type="humidity" />
+          <WeatherInfo selectedWarehouse={selectedWarehouse} />
+
           </View>
           <SmartAlertCard sensorData={processedData} />
 
@@ -211,7 +307,7 @@ export default function HomeScreen({ navigation }) {
           />
 
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <Text style={styles.chartTitle}>Tendência Horária</Text>
+            <Text style={styles.chartTitle}>Variação nas últimas 24h</Text>
             {renderTrendIndicator()} 
           </View>
 
@@ -239,10 +335,10 @@ export default function HomeScreen({ navigation }) {
             style={styles.chart}
           />
 
-          <SummaryBox
-            min={`${Math.round(Math.min(...processedData.daily.map((d) => d.tempMin)))}`}
-            max={`${Math.round(Math.max(...processedData.daily.map((d) => d.tempMax)))}`}
-            variation={`${Math.abs(processedData.current.temp - processedData.daily[0].tempMin).toFixed(1)}`}
+          <SummaryBox 
+            min={Math.min(...processedData.daily.map(d => d.tempMin))}
+            max={Math.max(...processedData.daily.map(d => d.tempMax))}
+            variation={Math.abs(processedData.current.temp - processedData.daily[0].tempMin).toFixed(1)}
           />
 
           <View ref={chartRef}>
@@ -253,7 +349,7 @@ export default function HomeScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("Relatorios")}
+        onPress={() => navigation.navigate("Relatorios", { selectedWarehouse })}
       >
         <Text style={styles.buttonText}>RELATÓRIOS</Text>
       </TouchableOpacity>
@@ -271,6 +367,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 16,
   },
+  header: {
+    width: '90%',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -282,6 +383,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 16,
     marginBottom: 8,
+    alignSelf: 'flex-start',
+    marginLeft: '5%',
   },
   chart: {
     borderRadius: 16,
@@ -295,6 +398,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginTop: 16,
+  },
+  updateText: {
+    fontSize: 12,
+    color: '#666',
     marginBottom: 8,
   },
   button: {
@@ -309,5 +416,36 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  selectorContainer: {
+    width: '90%',
+    marginBottom: 16,
+  },
+  selectorLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 10,
+    marginTop: 20,
+  },
+  picker: {
+    borderColor: "#ccc",
+    backgroundColor: '#fff',
+  }, warehouseContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 16,
+  },
+  warehouseButton: {
+    padding: 8,
+    margin: 4,
+    backgroundColor: '#ccc',
+    borderRadius: 8,
+  },
+  selectedWarehouse: {
+    backgroundColor: '#5c9',
+  },
+  warehouseText: {
+    color: '#000',
   },
 });

@@ -1,3 +1,4 @@
+// Classificação da temperatura em quente e bom 
 import React from 'react';
 import { View, Text, Modal, Button, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';

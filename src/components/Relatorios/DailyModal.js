@@ -1,3 +1,4 @@
+// Médoa diaria
 import React, { useMemo } from 'react';
 import { View, Text, Modal, ScrollView, Button } from 'react-native';
 import { round } from 'lodash';

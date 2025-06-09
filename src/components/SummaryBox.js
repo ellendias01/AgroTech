@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-
+import { ApiRoutes } from '../config/api';
 const screenWidth = Dimensions.get("window").width;
 
 export default function SummaryBox() {
@@ -9,7 +9,7 @@ export default function SummaryBox() {
   const [variation, setVariation] = useState(null);
 
   const fetchTemperatura = () => {
-    fetch("http://192.168.100.4:8080/api/dados?dias=30")
+    fetch(ApiRoutes.base())
       .then((res) => res.json())
       .then((data) => {
         if (!Array.isArray(data) || data.length === 0) {

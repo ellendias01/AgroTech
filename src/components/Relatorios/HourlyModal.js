@@ -1,3 +1,4 @@
+// Média por hora 
 import React from 'react';
 import { View, Text, Modal, ScrollView, Button } from 'react-native';
 import { round } from 'lodash';

@@ -129,28 +129,28 @@ export const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
     color: '#333',
   },
   modalSubtitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 15,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     color: '#2196F3',
   },
   modalRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
   modalLabel: {
     fontWeight: 'bold',
-    marginRight: 8,
-    minWidth: 100,
+    marginRight: 5,
+    minWidth: 50,
   },
   normalText: {
     color: 'green',
@@ -217,5 +217,23 @@ export const styles = StyleSheet.create({
   dateButtonContainer: {
     flex: 1,
     marginHorizontal: 5
-  }
+  },
+   button: {
+    borderWidth: 1,
+    borderColor: '#333',
+    padding: 12,
+    borderRadius: 4,
+  },
+  dropdown: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 4,
+    backgroundColor: '#fff',
+  },
+  option: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
 });

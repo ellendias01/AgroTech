@@ -10,7 +10,7 @@ export function calcularMediasHora(filteredData) {
     const date = new Date(d.datetime);
     if (isNaN(date.getTime())) {
       console.warn('Data inválida:', d.datetime);
-      return; // pula item com datetime inválido
+      return;
     }
 
     const hour = date.getHours();
@@ -21,11 +21,21 @@ export function calcularMediasHora(filteredData) {
     dados[hour].count++;
   });
 
-  return hours.map(h => ({
-    hour: h,
-    tempAvg: dados[h] ? dados[h].temp / dados[h].count : 0,
-    humidityAvg: dados[h] ? dados[h].hum / dados[h].count : 0,
-  }));
+  return hours.map(h => {
+    const horaDados = dados[h];
+    const tempAvg = horaDados && horaDados.count > 0
+      ? horaDados.temp / horaDados.count
+      : 0;
+    const humidityAvg = horaDados && horaDados.count > 0
+      ? horaDados.hum / horaDados.count
+      : 0;
+
+    return {
+      hour: h,
+      tempAvg: parseFloat(tempAvg.toFixed(1)),
+      humidityAvg: parseFloat(humidityAvg.toFixed(1)),
+    };
+  });
 }
 
 export function calcularMediasDiarias(filteredData) {
@@ -61,14 +71,19 @@ export function calcularMediasDiarias(filteredData) {
     diaInfo.count++;
   });
 
-  return Object.values(diario).map(d => ({
-    date: d.date,
-    dateStr: format(d.date, 'dd/MM'),
-    tempAvg: d.tempSum / d.count,
-    tempMin: d.tempMin,
-    tempMax: d.tempMax,
-    humidityAvg: d.humiditySum / d.count,
-  }));
+  return Object.values(diario).map(d => {
+    const tempAvg = d.count > 0 ? d.tempSum / d.count : 0;
+    const humidityAvg = d.count > 0 ? d.humiditySum / d.count : 0;
+
+    return {
+      date: d.date,
+      dateStr: format(d.date, 'dd/MM'),
+      tempAvg: parseFloat(tempAvg.toFixed(1)),
+      tempMin: d.tempMin ?? 0,
+      tempMax: d.tempMax ?? 0,
+      humidityAvg: parseFloat(humidityAvg.toFixed(1)),
+    };
+  });
 }
 
 export function calcularPrimeirosDiarios(filteredData) {
@@ -89,8 +104,12 @@ export function calcularPrimeirosDiarios(filteredData) {
   });
 
   return Object.entries(mapa).map(([dia, v]) => {
-    const tempAvg = v.temp.reduce((a, b) => a + b, 0) / v.temp.length;
-    const humAvg = v.hum.reduce((a, b) => a + b, 0) / v.hum.length;
+    const tempAvg = v.temp.length > 0
+      ? v.temp.reduce((a, b) => a + b, 0) / v.temp.length
+      : 0;
+    const humAvg = v.hum.length > 0
+      ? v.hum.reduce((a, b) => a + b, 0) / v.hum.length
+      : 0;
 
     return {
       dateStr: format(new Date(dia), 'dd/MM'),

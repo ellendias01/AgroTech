@@ -1,4 +1,3 @@
-//Previsão para os ´proximos dias  
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
@@ -7,7 +6,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 const WeatherDashboard = ({ sensorData }) => {
   const screenWidth = Dimensions.get('window').width;
 
-  // Processa os dados para o formato necessário
+  const [processedData, setProcessedData] = useState(null);
+
+  // Função para processar os dados (igual a sua)
   const processData = (rawData) => {
     if (!rawData || rawData.length === 0) return null;
 
@@ -16,7 +17,6 @@ const WeatherDashboard = ({ sensorData }) => {
     );
 
     const hourlyData = [];
-    const dailyData = [];
     const daysMap = {};
 
     sortedData.forEach(item => {
@@ -66,10 +66,19 @@ const WeatherDashboard = ({ sensorData }) => {
     };
   };
 
-  // Agora processa os dados antes de qualquer uso
-  const processedData = processData(sensorData);
+  useEffect(() => {
+    // Processa os dados inicialmente
+    setProcessedData(processData(sensorData));
 
-  // Verifica se os dados já foram processados
+    // Atualiza a cada 1 minuto (60000 ms)
+    const intervalId = setInterval(() => {
+      setProcessedData(processData(sensorData));
+    }, 60000);
+
+    // Limpa o intervalo quando o componente desmonta
+    return () => clearInterval(intervalId);
+  }, [sensorData]);
+
   if (!processedData) {
     return (
       <View style={styles.loadingContainer}>

@@ -17,7 +17,7 @@ import { LineChart } from "react-native-chart-kit";
 import InfoCard from "../components/InfoCard";
 import AlertCard from "../components/AlertCard";
 import SummaryBox from "../components/SummaryBox";
-
+import { ApiRoutes } from '../config/api';
 const screenWidth = Dimensions.get("window").width;
 
 export default function HomeScreen({ navigation }) {
@@ -25,7 +25,7 @@ export default function HomeScreen({ navigation }) {
   const [processedData, setProcessedData] = useState(null);
 
   useEffect(() => {
-    fetch("http://192.168.100.7:8080/api/dados") // Substitua pela sua URL real
+    fetch(ApiRoutes.base())// Substitua pela sua URL real
       .then((res) => res.json())
       .then((data) => {
         setSensorData(data);

@@ -7,11 +7,14 @@ import { format } from 'date-fns';
 export function calcularEstatisticas(filteredData) {
   if (!filteredData || filteredData.length === 0) return null;
 
-  const temps = filteredData.map(d => d.temperature);
-  const humids = filteredData.map(d => d.humidity);
-  const heatIndexes = filteredData.map(d => d.heatIndex);
+  const temps = filteredData.map(d => Number (d.temperature));
+  const humids = filteredData.map(d => Number( d.humidity));
+  const heatIndexes = filteredData.map(d => Number (d.heatIndex));
+ 
  // Cálculos básicos
   const calcStats = (values) => {
+    const roundedValues = values.map(v => round(v, 1)); // <- use isso
+
     const min = Math.min(...values);
     const max = Math.max(...values);
     const avg = values.reduce((a, b) => a + b, 0) / values.length;
@@ -24,7 +27,7 @@ export function calcularEstatisticas(filteredData) {
     const freq = {};
     let maxFreq = 0;
     let modes = [];
-    values.forEach(v => {
+    roundedValues.forEach(v => {
       freq[v] = (freq[v] || 0) + 1;
       if (freq[v] > maxFreq) {
         maxFreq = freq[v];
@@ -46,7 +49,7 @@ export function calcularEstatisticas(filteredData) {
       q1: round(q1, 1),
       median: round(median, 1),
       q3: round(q3, 1),
-      moda: [...new Set(modes)].map(m => round(m, 1)),
+      moda: [...new Set(modes.map(m => round(m, 1)))],
       stdDev: round(stdDev, 2),
       skewness: round(skewness, 4),
       kurtosis: round(kurtosis, 4),

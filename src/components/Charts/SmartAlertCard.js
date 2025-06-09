@@ -1,15 +1,105 @@
-import React from 'react';
-import AlertCard from '../AlertCard'; // mesmo diretório ou ajuste o caminho conforme necessário
+import React, { useEffect, useState } from 'react';
+import { Text } from 'react-native'; // <--- IMPORTAÇÃO DO Text
+import axios from 'axios';
+import AlertCard from '../AlertCard';
 
+import { ApiRoutes } from '../../config/api';
 export default function SmartAlertCard({ sensorData }) {
-  if (!sensorData || !sensorData.current) {
-    return null; // ou renderize algo como <Text>Nenhum dado disponível</Text>
+  // Estados para dados do fetch
+  const [temperature, setTemperature] = useState(null);
+  const [humidity, setHumidity] = useState(null);
+  const [local, setLocal] = useState('');
+  const [loading, setLoading] = useState(true);
+
+    const [selectedWarehouse, setSelectedWarehouse] = useState("Galpão Sudeste - Lote 68"); // Estado para o galpão selecionado
+    const [warehouses, setWarehouses] = useState([ // Lista de galpões disponíveis
+        "Todos os Galpões",
+        "Galpão Sul - Lote 15",
+        "Galpão Base - Lote 02",
+        "Galpão Sudeste - Lote 68"
+      ]);
+
+  const fetchWeather = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(ApiRoutes.base());
+      const data = response.data;
+
+      if (Array.isArray(data)) {
+        const now = new Date();
+
+        // Filtra os dados do dia atual
+        const todayData = data.filter((item) => {
+          const itemDate = new Date(item.datetime);
+          return (
+            itemDate.getFullYear() === now.getFullYear() &&
+            itemDate.getMonth() === now.getMonth() &&
+            itemDate.getDate() === now.getDate()
+          );
+        });
+
+        if (todayData.length === 0) {
+          console.warn("Nenhum dado disponível para hoje.");
+          return;
+        }
+
+        // Encontra o dado mais próximo do horário atual
+        const closest = todayData.reduce((prev, curr) => {
+          const prevDiff = Math.abs(new Date(prev.datetime) - now);
+          const currDiff = Math.abs(new Date(curr.datetime) - now);
+          return currDiff < prevDiff ? curr : prev;
+        });
+
+        setTemperature(closest.temperature);
+        setHumidity(closest.humidity);
+        setLocal(closest.local_name);
+      } else {
+        // Se for um objeto só
+        setTemperature(data.temperature);
+        setHumidity(data.humidity);
+        setLocal(data.local_name);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar dados do clima:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWeather();
+
+    // Atualiza a cada 10 minutos
+    const interval = setInterval(fetchWeather, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [selectedWarehouse]);
+
+  // Decide qual dado usar: do sensorData (props) ou do fetch (estado local)
+  // Ajuste conforme a estrutura real dos dados
+  const dataToUse = sensorData?.current
+    ? {
+        temp: sensorData.current.temp,
+        humidity: sensorData.current.humidity,
+        datetime: sensorData.current.datetime,
+        hourly: sensorData.current.hourly || [],
+      }
+    : temperature !== null && humidity !== null
+    ? {
+        temp: temperature,
+        humidity: humidity,
+        datetime: new Date().toISOString(),
+        hourly: [], // se não tiver histórico, deixa vazio
+      }
+    : null;
+
+  if (!dataToUse || loading) {
+    return <Text>Carregando dados...</Text>; // Ou um componente de loading
   }
 
+  // Gera alertas com os dados escolhidos
   const generateAlerts = (data) => {
     const alerts = [];
-
-    const { temp, humidity, datetime, hourly } = data.current;
+    const { temp, humidity, datetime, hourly } = data;
 
     if (temp > 32) alerts.push("🔥 Temperatura muito alta! Risco de estresse térmico.");
     if (temp < 10) alerts.push("❄️ Temperatura muito baixa! Risco de hipotermia.");
@@ -34,7 +124,7 @@ export default function SmartAlertCard({ sensorData }) {
     return alerts;
   };
 
-  const alerts = generateAlerts(sensorData);
+  const alerts = generateAlerts(dataToUse);
 
-  return <AlertCard alerts={alerts} />;
+  return <AlertCard alerts={alerts} local={local} />;
 }
