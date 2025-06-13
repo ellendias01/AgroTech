@@ -81,7 +81,7 @@ let url = ApiRoutes.byPeriod(formattedStartDate, formattedEndDate);
 if (selectedWarehouse && selectedWarehouse !== 'Todos os Galpões') {
   url += `&local_name=${encodeURIComponent(selectedWarehouse)}`;
 }
-
+console.log('🔗 URL montada:', url);
 
   
         console.log("🔍 Buscando dados da URL:", url);

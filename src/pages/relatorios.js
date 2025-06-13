@@ -130,11 +130,14 @@ const [showOptions, setShowOptions] = useState(false);
         return;
       }
 
-      const url = ApiRoutes.byPeriod(periodo.inicio, periodo.fim);
-      const response = await axios.get(url);
-      if (warehouse && warehouse !== 'Todos os Galpões') {
-        url += `&local_name=${encodeURIComponent(warehouse)}`;
-      }
+  let url = ApiRoutes.byPeriod(periodo.inicio, periodo.fim);
+
+if (warehouse && warehouse !== 'Todos os Galpões') {
+  url += `&local_name=${encodeURIComponent(warehouse)}`;
+}
+
+const response = await axios.get(url);
+
 
       const res = await fetch(url);
       if (!res.ok) {
