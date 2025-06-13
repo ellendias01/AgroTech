@@ -1,132 +1,153 @@
-# 🎬 MovieShare
-![MovieShare Logo](https://em-content.zobj.net/thumbs/240/apple/354/clapper-board_1f3ac.png)
 
+# 🌱 AgroTech API - Monitoramento de Temperatura e Umidade
 
-Bem-vindo(a) ao **MovieShare**! 🍿✨  
-Um app feito com carinho para amantes de filmes que adoram descobrir, favoritar e compartilhar aquelas obras incríveis!  
-Este projeto foi desenvolvido como parte de um trabalho da faculdade 🎓📚.
-
-Feito Por: 
-
-Éllen Dias Farias <br>
-Habbiner Soares de Andrade
+Este é um projeto de API RESTful desenvolvido para coletar, armazenar e monitorar dados de sensores ambientais (temperatura e umidade) com foco em ambientes agropecuários. A API permite CRUD completo dos dados sensoriais, possui documentação via Swagger e CI/CD automatizado com Docker, GitHub Actions e análise de qualidade de código com SonarQube.
 
 ---
 
-## 💡 Sobre o Projeto
+## 🔧 Tecnologias Utilizadas
 
-O **MovieShare** é um aplicativo mobile criado com **React Native** que permite buscar filmes, visualizar detalhes, salvar favoritos e compartilhar com os amigos 💌.  
-Utiliza a API do OMDb 🎥 para trazer todas as informações direto pra sua telinha!
-
----
-
-## 📸 Preview do App
-
-| 🏠 Tela Inicial | 📄 Cadastro | 🔍 Busca de Filmes |
-|----------------|--------------------|-----------------------|
-| <img src="/img/1.jpg" width="150" alt="Tela Inicial"> | <img src="/img/2.jpg" width="150" alt="Cadastro"/> |  <img src="/img/3.jpg" width="150" alt="Busca de filme"/> |
-
-| 🎥 Filme | ⭐ Favoritos|  🎬 Detalhes do Filme |
-|-------------|---------------------|------------------|
-|  <img src="/img/4.jpg" width="150" alt="Filme"/> |  <img src="/img/5.jpg" width="150" alt="Favoritos"/> | <img src="/img/6.jpg"  width="150" alt="Detalhes"/> |
-
-
-
- ## Video 
- 
- https://github.com/user-attachments/assets/53ea192b-4871-48ec-b68e-c64c3442649b
- 
----
-
-
-## 🔍 Funcionalidades
-
-✅ Buscar filmes por título  
-✅ Ver detalhes como sinopse, elenco, nota etc.  
-✅ Adicionar aos favoritos 🌟  
-
-
-
-
-✅ Compartilhar com a galera 💬
+- **Node.js** com **Express**
+- **MongoDB** para persistência dos dados
+- **Swagger (OpenAPI)** para documentação interativa
+- **Docker** para conteinerização
+- **GitHub Actions** para pipeline de CI/CD
+- **SonarQube** para análise de qualidade de código
 
 ---
 
-## 🛠️ Tecnologias e Bibliotecas
+## 📁 Estrutura do Projeto
 
-Este projeto foi construído com:
-| Tecnologia     | Função                                   |
-|----------------|-------------------------------------------|
-| ⚛️ React Native | Base do app mobile                        |
-| 🌐 Axios        | Requisições HTTP para a OMDb              |
-| 🧭 React Navigation | Navegação entre telas                    |
-| 💾 AsyncStorage | Armazenamento local de favoritos          |
-| 🎬 OMDb API     | Fonte de dados sobre os filmes            |
-
-
-📄 Veja mais em [`Bibliotecas utilizadas.txt`](./Bibliotecas%20utilizadas.txt)
-
----
-
-## 🧪 Pré-requisitos
-
-Antes de rodar o app, você precisa ter:
-
-- [Node.js](https://nodejs.org/) instalado
-- [Expo CLI](https://docs.expo.dev/get-started/installation/) globalmente
+```
+📦 backend/
+ ┣ 📂models/
+ ┃ ┗ 📜DadosSensor.js
+ ┣ 📂routes/
+ ┃ ┗ 📜dataRoutes.js
+ ┣ 📜server.js
+ ┣ 📜.env
+ ┣ 📜swagger.yaml
+ ┣ 📜Dockerfile
+ ┗ 📜docker-compose.yml
+```
 
 ---
 
-## ▶️ Como Rodar o App
+## 🚀 Como Rodar o Projeto
 
-1. Clone o repositório:
+### 🐳 Usando Docker
+
+1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/ellendias01/MovieShare.git
+   git clone https://github.com/ellendias01/docker.git
+   cd backend
+   ```
 
-2. Acesse a pasta do projeto:
-   ```bash
-   cd MovieShare
+2. **Configure seu `.env`:**
+   ```env
+   MONGO_URI=mongodb://<seu_host_mongo>:27017/agrotech
+   ```
 
-3. Instale as dependências:
+3. **Build e up:**
    ```bash
-   npm install
-   
-4. Rode o app com o Expo:
-   ```bash
-   npm expo start
+   docker-compose up --build
+   ```
 
-5.📱 Escaneie o QR Code com o Expo Go no celular ou execute em um emulador Android/iOS.
+4. Acesse:
+   - API: `http://localhost:3000/dados`
+   - Swagger: `http://localhost:3000/api-docs`
 
 ---
 
-## 💻 Exemplo de Uso
-Abra o app
-Pesquise um filme (ex: “Interstellar”)
-Veja detalhes como:
+## 📑 Documentação Swagger
 
-   - Ano de lançamento
-   - Atores principais
-   - Nota do IMDb
+A API está documentada utilizando Swagger UI.
 
-Clique para adicionar aos seus favoritos <br>
-Compartilhe com seus amigos! 🎉
+Acesse em:  
+📌 `http://localhost:3000/api-docs`
 
+Exemplo de schema de dado:
 
+```yaml
+DadoSensor:
+  type: object
+  required:
+    - temperature
+    - humidity
+    - datetime
+    - local_name
+  properties:
+    _id:
+      type: string
+    temperature:
+      type: number
+      example: 25.5
+    humidity:
+      type: number
+      example: 60
+    datetime:
+      type: string
+      format: date-time
+    local_name:
+      type: string
+      example: "Estábulo 1"
+```
 
 ---
-## 🤝 Contribuindo
 
-Quer colaborar? Que legal! 💜 <br>
-Faça um fork do projeto <br>
-Crie uma branch nova: git checkout -b minha-feature <br>
-Commit suas mudanças: git commit -m 'Adiciona minha feature' <br>
-Faça push: git push origin minha-feature <br>
-Abra um Pull Request 🚀
+## 🔁 Endpoints Principais
 
+| Método | Rota                 | Descrição                     |
+|--------|----------------------|-------------------------------|
+| GET    | `/dados`             | Lista todos os dados          |
+| GET    | `/dados/:id`         | Busca um dado por ID          |
+| POST   | `/dados`             | Cria um novo registro         |
+| PUT    | `/dados/:id`         | Atualiza um dado existente    |
+| DELETE | `/dados/:id`         | Remove um registro por ID     |
 
 ---
 
-🪪 Licença
-Este projeto está sob a licença MIT — fique à vontade para usar e modificar!
+## ⚙️ CI/CD com GitHub Actions
 
-   
+O pipeline está configurado para:
+
+1. Buildar a imagem Docker e enviar para o Docker Hub: [`ellen25`](https://hub.docker.com/u/ellen25)
+2. Iniciar uma instância temporária do SonarQube via SSH no servidor remoto (`201.23.3.86`)
+3. Executar análise de código com SonarScanner
+4. Fazer o deploy da aplicação apenas se a qualidade for aprovada
+
+Arquivo `.github/workflows/deploy.yml` controla toda a automação.
+
+---
+
+## 🧪 Teste
+
+Você pode testar os endpoints utilizando:
+
+- **Thunder Client** (VS Code)
+- **Postman**
+- **Curl**
+- **Swagger UI** (`/api-docs`)
+
+---
+
+## 📌 Observações
+
+- Certifique-se de que a porta usada (3000) esteja disponível.
+- A conexão com o MongoDB deve estar funcional (local ou hospedado).
+- A documentação Swagger requer que o YAML esteja corretamente indentado (atenção aos erros `YAMLSyntaxError`).
+
+---
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Sinta-se livre para abrir issues ou pull requests. 💻
+
+---
+
+## 👩‍💻 Desenvolvido por
+
+**Éllen Dias Farias**  
+GitHub: [@ellendias01](https://github.com/ellendias01)
+
+---
