@@ -17,9 +17,8 @@ export const captureViewAsPDF = async (ref, fileName = 'relatorio', options = {}
     const formatDateTime = date => date ? moment(date).format('DD/MM/YYYY HH:mm') : 'N/A';
     const now = moment().format('DD/MM/YYYY HH:mm');
 
-    const limitedData = data.slice(0, 15); // Limita a 15 registros como no exemplo
+    const limitedData = data.slice(0, 15); 
 
-    // Função auxiliar para interpretar valores de correlação
     const getCorrelationInterpretation = (value) => {
       if (value === undefined || value === null) return 'indeterminada';
       const absValue = Math.abs(value);

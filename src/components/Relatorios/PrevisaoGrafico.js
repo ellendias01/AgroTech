@@ -127,7 +127,7 @@ const ForecastGrafico = ({ temperatureData = [] }) => {
             color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             fillShadowGradientFrom: '#cce4f7',
-            fillShadowGradientTo: '#66b5f2',   // cor do preenchimento (exemplo verde)
+            fillShadowGradientTo: '#66b5f2', 
             fillShadowGradientOpacity: 0.2,  // opacidade do preenchimento
             propsForDots: {
               r: '4',

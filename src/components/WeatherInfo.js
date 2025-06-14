@@ -59,7 +59,7 @@ export default function WeatherInfo({ selectedWarehouse }) {
   
     const interval = setInterval(fetchWeather, 10 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [selectedWarehouse]); // <- importante aqui!
+  }, [selectedWarehouse]);
  
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
 

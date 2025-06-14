@@ -45,7 +45,7 @@ export default function HomeScreen({ navigation }) {
   
         if (!warehouse && uniqueWarehouses.length > 0) {
           warehouse = uniqueWarehouses[0];
-          setSelectedWarehouse(warehouse); // Atualiza o estado também
+          setSelectedWarehouse(warehouse);
         }
   
         const filteredData = warehouse === "Todos os Galpões"

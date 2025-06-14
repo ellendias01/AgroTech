@@ -25,7 +25,7 @@ export default function HomeScreen({ navigation }) {
   const [processedData, setProcessedData] = useState(null);
 
   useEffect(() => {
-    fetch(ApiRoutes.base())// Substitua pela sua URL real
+    fetch(ApiRoutes.base())
       .then((res) => res.json())
       .then((data) => {
         setSensorData(data);

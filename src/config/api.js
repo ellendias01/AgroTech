@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.74.237:8080/api/dados";
+const BASE_URL = "http://192.168.18.30:8080/api/dados";
 
 export const ApiRoutes = {
   // 1. Base simples

@@ -22,7 +22,7 @@ export default class CadastrarUsuario extends Component {
     fazenda: "",
     email: "",
     password: "",
-    focusedField: "", // Adicionando um campo para identificar qual campo está focado
+    focusedField: "",
   };
 
   // Função para salvar os dados no AsyncStorage
@@ -112,7 +112,7 @@ export default class CadastrarUsuario extends Component {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 50} // Ajuste fino
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 50}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView

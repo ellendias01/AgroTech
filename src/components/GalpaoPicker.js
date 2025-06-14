@@ -50,21 +50,12 @@ export default function Estatisticas() {
 
     // Ajusta para o dia final: nunca data futura
     const finalEnd = end > hoje ? hoje : end;
-
-    // Exemplo de busca - adaptar para sua API
-    // Para exemplo, vou simular uma API local com filtro
     
-    // MOCK API URL (troque aqui pela sua real)
     const url = ApiRoutes.byGalpaoAndDate(galpao, start, finalEnd);
     const response = await axios.get(url);
     try {
-      // const response = await fetch(url);
-      // const json = await response.json();
-
-      // Simulando dados
+    
       const json = generateMockData(start, finalEnd, galpao);
-
-      // Filtrar datas maiores que hoje só para garantir
       const filtered = json.filter(d => new Date(d.datetime) <= hoje);
 
       setData(filtered);
@@ -235,8 +226,6 @@ export default function Estatisticas() {
   );
 }
 
-
-// MOCK data generator - para testar sem backend
 function generateMockData(start, end, galpao) {
   const data = [];
   const current = new Date(start);
@@ -245,7 +234,7 @@ function generateMockData(start, end, galpao) {
     data.push({
       _id: Math.random().toString(36).substr(2, 9),
       datetime: current.toISOString(),
-      temperature: (15 + Math.random() * 15).toFixed(Math.floor(Math.random()*3)), // 1 a 2 casas decimais aleatórias
+      temperature: (15 + Math.random() * 15).toFixed(Math.floor(Math.random()*3)),
       humidity: (50 + Math.random() * 50).toFixed(Math.floor(Math.random()*3)),
       local_name: galpao
     });

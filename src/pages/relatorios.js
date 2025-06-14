@@ -85,8 +85,6 @@ const [showOptions, setShowOptions] = useState(false);
         const uniqueWarehouses = [...new Set(data.map(item => item.local_name))];
         setWarehouses(['Todos os Galpões', ...uniqueWarehouses]);
         
-        // Se veio da main com um galpão selecionado, usa esse
-    
         if (!warehouse && uniqueWarehouses.length > 0) {
           warehouse = uniqueWarehouses[0];
           setSelectedWarehouse(warehouse);
@@ -147,7 +145,6 @@ const response = await axios.get(url);
 
       const json = await res.json();
 
-      // ✅ Processa os dados recebidos
       const processedData = json
         .map(item => ({
           ...item,
@@ -164,16 +161,13 @@ const response = await axios.get(url);
       setSensorData(json);
       setData(processedData);
 
-      // ✅ Filtra os dados pelo galpão selecionado
       const dadosFiltrados = warehouse === 'Todos os Galpões'
         ? processedData
         : processedData.filter(item => item.local_name === warehouse);
 
-      // ✅ Chamada para combinar dados
       const combinado = combinarDados(dadosFiltrados);
       setDados(combinado);
 
-      // ✅ Classificação das temperaturas
       const contagem = { Frio: 0, Agradável: 0, Quente: 0 };
       combinado.forEach(item => {
         if (item.temperature !== null) {
@@ -204,7 +198,7 @@ const response = await axios.get(url);
     }
   };
 
-  fetchData(selectedWarehouse); // Chama a função com warehouse selecionado (ou o que estiver usando)
+  fetchData(selectedWarehouse);
 }, [periodo, selectedWarehouse]);
 
   // Funções auxiliares
@@ -263,20 +257,18 @@ const response = await axios.get(url);
     return orderedCategories.filter(c => mapa[c]).map(c => mapa[c]);
   }, [classificationRaw]);
 
-  // Função para Exportar PDF
- // No seu componente:
 const handleExportPDF = async () => {
   try {
     if (chartRef.current) {
       await captureViewAsPDF(chartRef.current, 'relatorio_estatisticas', {
         startDate,
         endDate,
-        data, // seus dados filtrados
-        estatisticas: { // suas estatísticas calculadas
+        data,
+        estatisticas: {
           temperature: tempStats,
           humidity: humidityStats
         },
-        forecast: forecastMemo // seus dados de previsão
+        forecast: forecastMemo 
       });
     }
   } catch (error) {
@@ -315,7 +307,7 @@ const handleExportPDF = async () => {
       {
         data: dailyAverages.map(d => {
           const v = parseFloat(d.tempAvg);
-          return Number.isFinite(v) ? v : 0; // ou null, dependendo do gráfico
+          return Number.isFinite(v) ? v : 0; 
         }),
         color: (opacity = 1) => `rgba(255, 87, 51, ${opacity})`,
         strokeWidth: 2,

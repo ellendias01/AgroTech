@@ -67,7 +67,6 @@ const chartRef = useRef();
     closeMenu();};
 const forecastMemo = useMemo(() => gerarPrevisao(dados), [dados]);
  const estatisticas = useMemo(() => calcularEstatisticas(data), [data]);
-  // Efeito para carregar os dados quando o componente monta ou quando os filtros mudam
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -88,7 +87,6 @@ console.log('🔗 URL montada:', url);
 
         const res = await fetch(url);
   
-        // 🔎 Se não for resposta 200, lança erro
         if (!res.ok) {
           const errorText = await res.text();
           console.error("❌ Erro do servidor:", errorText);
@@ -97,7 +95,7 @@ console.log('🔗 URL montada:', url);
   
         const jsonData = await res.json();
   
-        // 🔄 Processa os dados recebidos
+        // Processa os dados recebidos
         const processedData = jsonData
           .map(item => ({
             ...item,
@@ -139,7 +137,6 @@ console.log('🔗 URL montada:', url);
     const currentDate = selectedDate || endDate;
     setShowEndDatePicker(Platform.OS === 'ios');
     
-    // Garante que a data final não seja futura
     const today = new Date();
     if (currentDate > today) {
       setEndDate(today);
@@ -184,7 +181,6 @@ console.log('🔗 URL montada:', url);
   const tempStats = calculateStats('temperature');
   const humidityStats = calculateStats('humidity');
 
-  // Agrupa dados por dia para os gráficos
   const groupByDay = () => {
     const grouped = {};
     
@@ -226,7 +222,6 @@ console.log('🔗 URL montada:', url);
   const tempChartConfig = { ...chartConfig, color: (o = 1) => `rgba(255, 99, 71, ${o})`, propsForDots: { ...chartConfig.propsForDots, stroke: '#FF6347' } };
   const humidityChartConfig = { ...chartConfig, color: (o = 1) => `rgba(51, 153, 255, ${o})`, propsForDots: { ...chartConfig.propsForDots, stroke: '#3399FF' } };
   const barChartConfig = { ...chartConfig, color: (o = 1) => `rgba(102, 102, 255, ${o})`, propsForDots: {} };
-  // Função para filtrar labels para mostrar a cada 3 horas
   const filterHourlyLabels = (hours) => {
     return hours.map((hour, index) => index % 1 === 0 ? hour.toString() : '');
   };
@@ -348,11 +343,8 @@ const getTemperatureClassificationData = () => {
   <Text style={styles.modalButtonText}>Exportar para PDF</Text>
 </TouchableOpacity>
 
-// Adicione esta função no seu componente:
-// No seu componente:
 const handleExportPDF = async () => {
   try {
-    // Você pode verificar permissões para compartilhamento se quiser, mas não é obrigatório com expo-print
     
     // Gera o PDF e compartilha
     await captureViewAsPDF(null, 'relatorio_estatisticas', {
@@ -371,8 +363,6 @@ const handleExportPDF = async () => {
   }
 };
 
-
-  // Renderização condicional
   if (loading) {
     return (
       <View style={styles.container}>
@@ -429,7 +419,7 @@ const handleExportPDF = async () => {
           mode="date"
           display="default"
           onChange={onStartDateChange}
-          maximumDate={new Date()} // Não permite datas futuras
+          maximumDate={new Date()}
         />
       )}
     </View>
@@ -448,7 +438,7 @@ const handleExportPDF = async () => {
           mode="date"
           display="default"
           onChange={onEndDateChange}
-          maximumDate={new Date()} // Não permite datas futuras
+          maximumDate={new Date()} 
         />
       )}
     </View>
@@ -545,7 +535,7 @@ const handleExportPDF = async () => {
         backgroundGradientFrom: '#fff',
         backgroundGradientTo: '#fff',
         decimalPlaces: 1,
-        color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`, // cor da linha
+        color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
       }}
       bezier
@@ -611,7 +601,7 @@ const handleExportPDF = async () => {
                     ]
                   }]
                 }}
-                width={Math.max(screenWidth, 5 * 80)} // 5 categorias * 80px cada
+                width={Math.max(screenWidth, 5 * 80)}
                 height={220}
                 chartConfig={barChartConfig}
                 style={styles.chart}
@@ -638,7 +628,7 @@ const handleExportPDF = async () => {
         backgroundGradientFrom: '#fff',
         backgroundGradientTo: '#fff',
         decimalPlaces: 1,
-        color: (opacity = 1) => `rgba(255, 87, 51, ${opacity})`, // Cor laranja
+        color: (opacity = 1) => `rgba(255, 87, 51, ${opacity})`, 
         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
       }}
       bezier
@@ -702,7 +692,7 @@ const handleExportPDF = async () => {
         backgroundGradientFrom: '#fff',
         backgroundGradientTo: '#fff',
         decimalPlaces: 1,
-        color: (opacity = 1) => `rgba(51, 153, 255, ${opacity})`, // Cor azul
+        color: (opacity = 1) => `rgba(51, 153, 255, ${opacity})`,
         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
       }}
       bezier
@@ -827,7 +817,7 @@ const handleExportPDF = async () => {
       )}
         </ScrollView>
  <TouchableOpacity 
-  style={[styles.modalButton, styles.pdfButton]} // Adicione uma classe específica para o PDF
+  style={[styles.modalButton, styles.pdfButton]} 
   onPress={handleExportPDF}
 >
   <Text style={styles.modalButtonText}>📄 Exportar PDF</Text>
@@ -982,7 +972,7 @@ modalButtonText: {
   color: 'white',
   fontWeight: 'bold',
 },pdfButton: {
-    backgroundColor: '#e74c3c', // Vermelho mais vibrante
+    backgroundColor: '#e74c3c',
     marginTop: 20,
     paddingVertical: 15,
     elevation: 5, // Sombra no Android

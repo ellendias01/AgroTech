@@ -15,8 +15,6 @@ const ScatterTempHorarioChart = ({ filteredData }) => {
       </View>
     );
   }
-
-  // Processamento mais tolerante dos dados
   const processedData = filteredData
     .map(d => {
       try {
@@ -24,7 +22,6 @@ const ScatterTempHorarioChart = ({ filteredData }) => {
         const temp = parseFloat(d.temperature);
         if (isNaN(temp)) return null;
         
-        // Tenta converter datetime de várias formas
         let date;
         if (d.datetime instanceof Date) {
           date = d.datetime;

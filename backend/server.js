@@ -30,7 +30,7 @@ const swaggerOptions = {
     },
     servers: [{ url: 'http://localhost:8080' }],
   },
-  apis: ['./routes/*.js'], // Ajuste conforme a pasta correta
+  apis: ['./routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);

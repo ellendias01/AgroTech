@@ -74,8 +74,6 @@ export default function SmartAlertCard({ sensorData }) {
     return () => clearInterval(interval);
   }, [selectedWarehouse]);
 
-  // Decide qual dado usar: do sensorData (props) ou do fetch (estado local)
-  // Ajuste conforme a estrutura real dos dados
   const dataToUse = sensorData?.current
     ? {
         temp: sensorData.current.temp,
@@ -88,12 +86,12 @@ export default function SmartAlertCard({ sensorData }) {
         temp: temperature,
         humidity: humidity,
         datetime: new Date().toISOString(),
-        hourly: [], // se não tiver histórico, deixa vazio
+        hourly: [],
       }
     : null;
 
   if (!dataToUse || loading) {
-    return <Text>Carregando dados...</Text>; // Ou um componente de loading
+    return <Text>Carregando dados...</Text>;
   }
 
   // Gera alertas com os dados escolhidos

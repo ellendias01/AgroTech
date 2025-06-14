@@ -8,10 +8,9 @@ import { Dimensions } from 'react-native';
 const LinearTemperatureForecast = ({ temperatureData = [] }) => {
   const screenWidth = Dimensions.get('window').width;
 
-  // Função segura para formatar temperaturas
   const formatTemperature = (temp) => {
     if (temp === null || temp === undefined || isNaN(temp)) {
-      return 'N/A'; // ou return '0.0' se preferir mostrar zero
+      return 'N/A';
     }
     return parseFloat(temp).toFixed(1);
   };
@@ -34,7 +33,7 @@ const LinearTemperatureForecast = ({ temperatureData = [] }) => {
       ...item,
       timestamp: moment(item.datetime).unix(),
       datetime: moment(item.datetime).toDate(),
-      dayOfYear: moment(item.datetime).dayOfYear(), // Para sazonalidade
+      dayOfYear: moment(item.datetime).dayOfYear(),
     })).sort((a, b) => a.timestamp - b.timestamp);
   };
 
@@ -54,7 +53,7 @@ const LinearTemperatureForecast = ({ temperatureData = [] }) => {
   // Regressão Linear com limites realistas
   const realisticLinearRegression = (x, y) => {
     const n = x.length;
-    if (n < 2) return { slope: 0, intercept: y[0] || 20 }; // Valor padrão se poucos dados
+    if (n < 2) return { slope: 0, intercept: y[0] || 20 };
     
     const xSum = x.reduce((a, b) => a + b, 0);
     const ySum = y.reduce((a, b) => a + b, 0);
@@ -67,14 +66,12 @@ const LinearTemperatureForecast = ({ temperatureData = [] }) => {
     let slope = (n * xySum - xSum * ySum) / denom;
     let intercept = (ySum - slope * xSum) / n;
 
-    // Limitar a inclinação para evitar extrapolações extremas
-    const maxSlope = 0.5; // Máximo de 0.5°C por dia de variação
+    const maxSlope = 0.5;
     slope = Math.max(-maxSlope, Math.min(maxSlope, slope));
 
     return { slope, intercept };
   };
 
-  // Calcular média móvel para suavizar variações
   const movingAverage = (data, windowSize = 3) => {
     return data.map((val, i) => {
       const start = Math.max(0, i - windowSize);
@@ -84,31 +81,26 @@ const LinearTemperatureForecast = ({ temperatureData = [] }) => {
     });
   };
 
-  // Normalizar timestamps em dias a partir do primeiro ponto
   const baseTimestamp = dfPeriodo[0].timestamp;
   const normalizedTimestamps = dfPeriodo.map((item) => 
     (item.timestamp - baseTimestamp) / 86400
   );
 
-  // Suavizar temperaturas com média móvel
   const rawTemperatures = dfPeriodo.map((item) => item.temperature);
   const temperatures = movingAverage(rawTemperatures);
 
   // Calcular regressão
   const { slope, intercept } = realisticLinearRegression(normalizedTimestamps, temperatures);
 
-  // Previsão para os próximos 7 dias com limites realistas
   const ultimaData = moment.max(dfPeriodo.map((item) => moment(item.datetime)));
   const diasFuturos = Array.from({ length: 7 }, (_, i) =>
     moment(ultimaData).add(i + 1, 'days')
   );
 
-  // Calcular faixa realista baseada nos dados históricos
   const minTemp = Math.min(...temperatures);
   const maxTemp = Math.max(...temperatures);
   const tempRange = maxTemp - minTemp;
   
-  // Margem de segurança de 20% acima/abaixo dos extremos históricos
   const safeMin = minTemp - tempRange * 0.2;
   const safeMax = maxTemp + tempRange * 0.2;
 
@@ -116,10 +108,8 @@ const LinearTemperatureForecast = ({ temperatureData = [] }) => {
     const timestampNormalizado = (dia.unix() - baseTimestamp) / 86400;
     let predicted = intercept + slope * timestampNormalizado;
     
-    // Aplicar limites realistas
     predicted = Math.max(safeMin, Math.min(safeMax, predicted));
     
-    // Ajustar para sazonalidade (simplificado)
     const dayOfYear = dia.dayOfYear();
     const similarDays = dfPeriodo.filter(d => 
       Math.abs(moment(d.datetime).dayOfYear() - dayOfYear) <= 3
@@ -129,7 +119,7 @@ const LinearTemperatureForecast = ({ temperatureData = [] }) => {
       const seasonalAdjustment = similarDays.reduce(
         (sum, d) => sum + d.temperature, 0
       ) / similarDays.length;
-      predicted = (predicted * 0.7 + seasonalAdjustment * 0.3); // Mistura com padrão sazonal
+      predicted = (predicted * 0.7 + seasonalAdjustment * 0.3);
     }
     
     return parseFloat(predicted.toFixed(1));

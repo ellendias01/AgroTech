@@ -3,7 +3,6 @@
 
 import { round } from 'lodash';
 import { format } from 'date-fns';
- // Cálculos estatísticos completos (memoizados)
 export function calcularEstatisticas(filteredData) {
   if (!filteredData || filteredData.length === 0) return null;
 
@@ -13,7 +12,7 @@ export function calcularEstatisticas(filteredData) {
  
  // Cálculos básicos
   const calcStats = (values) => {
-    const roundedValues = values.map(v => round(v, 1)); // <- use isso
+    const roundedValues = values.map(v => round(v, 1));
 
     const min = Math.min(...values);
     const max = Math.max(...values);

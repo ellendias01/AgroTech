@@ -8,7 +8,6 @@ const WeatherDashboard = ({ sensorData }) => {
 
   const [processedData, setProcessedData] = useState(null);
 
-  // Função para processar os dados (igual a sua)
   const processData = (rawData) => {
     if (!rawData || rawData.length === 0) return null;
 
@@ -88,7 +87,6 @@ const WeatherDashboard = ({ sensorData }) => {
     );
   }
 
-  // Agora sim é seguro acessar processedData
   const hourlyLabels = processedData.current.hourly.map(h => h.time);
   const hourlyTemps = processedData.current.hourly.map(h => h.temp);
   const filteredLabels = hourlyLabels.map((label, i) => (i % 3 === 0 ? label : ''));

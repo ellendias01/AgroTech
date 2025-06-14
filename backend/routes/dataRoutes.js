@@ -50,7 +50,7 @@ const DadosSensor = require('../models/DadosSensor');
  *         name: dias
  *         schema:
  *           type: integer
- *         description: Número de dias a buscar, padrão: 7
+ *         description: "Número de dias a buscar, (padrão: 7)"
  *       - in: query
  *         name: local_name
  *         schema:

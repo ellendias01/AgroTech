@@ -71,8 +71,8 @@ const CorrelationScatterChart = ({ filteredData }) => {
     const desc = `${strength.charAt(0).toUpperCase() + strength.slice(1)} ${direction}`;
   
     const color = r > 0
-      ? (abs >= 0.7 ? '#2e7d32' : '#81c784') // verde forte / moderado
-      : (abs >= 0.7 ? '#c62828' : '#ef9a9a'); // vermelho forte / moderado
+      ? (abs >= 0.7 ? '#2e7d32' : '#81c784') // verde forte
+      : (abs >= 0.7 ? '#c62828' : '#ef9a9a'); // vermelho forte
   
     return { desc, color };
   };

@@ -15,7 +15,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-/*falta a parte do login pra arrumar*/
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -99,17 +98,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center", // Mantém os elementos centralizados
+    justifyContent: "center", 
     backgroundColor: "#fff",
-    gap: 15, // Espaçamento entre os elementos
+    gap: 15, 
   },
   logo: {
-    width: 300, // Ajuste o tamanho conforme necessário
+    width: 300, 
     height: 300,
-    marginTop: -150, // Move a logo para cima
+    marginTop: -150, 
   },
   inputContainer: {
-    width: "80%", // Garante que o input e o label fiquem alinhados
+    width: "80%", 
   },
   label: {
     fontSize: 16,
